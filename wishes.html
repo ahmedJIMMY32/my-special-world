@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لوحة أمنياتنا ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,700;1,400&family=Cairo:wght@300;600&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --wood-dark: #2c1e12;
+            --accent-gold: #c5a059;
+            --text-light: #f4ece4;
+        }
+
+        @keyframes siteEntry {
+            from { opacity: 0; transform: scale(1.02); filter: blur(5px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: #3d2b1f;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png'); 
+            font-family: 'Cairo', sans-serif;
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            animation: siteEntry 2.5s ease-out;
+        }
+
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.6) 100%);
+            pointer-events: none; z-index: 2;
+        }
+
+        header { text-align: center; padding: 40px 20px; position: relative; z-index: 10; }
+        header h1 {
+            font-family: 'Aref Ruqaa', serif;
+            font-size: clamp(2rem, 8vw, 3.5rem); /* حجم خط مرن */
+            color: var(--accent-gold);
+            margin: 0;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+        }
+
+        /* تنسيق الشبكة للموبايل والكمبيوتر */
+        .board {
+            position: relative; z-index: 10;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* جعل العرض أصغر ليتناسب مع الموبايل */
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .board {
+                grid-template-columns: 1fr 1fr; /* عرض ورقتين بجانب بعض في الموبايلات الصغيرة */
+                gap: 10px;
+            }
+        }
+
+        .sticky-note {
+            background: #fff; color: #333;
+            padding: 20px 10px;
+            min-height: 160px; /* تقليل الارتفاع قليلاً للموبايل */
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border-radius: 15px;
+            border-left: 5px solid var(--accent-gold);
+            transform: rotate(var(--r));
+        }
+
+        .sticky-note:active { transform: scale(0.95); }
+
+        .sticky-note span {
+            font-family: 'Aref Ruqaa', serif;
+            font-size: clamp(1rem, 4vw, 1.4rem); /* حجم خط مرن للعنوان داخل الورقة */
+            color: #2c1e12;
+            text-align: center;
+        }
+
+        /* النافذة المنبثقة - تحسين للموبايل */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; visibility: hidden;
+            backdrop-filter: blur(10px);
+            transition: all 0.8s ease;
+            padding: 20px;
+        }
+
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background: #fdfcfb;
+            width: 100%;
+            max-width: 500px;
+            padding: 35px 20px;
+            border-radius: 30px;
+            text-align: center;
+            transform: translateY(20px);
+            border-top: 6px solid var(--accent-gold);
+            transition: transform 0.6s ease;
+        }
+
+        .overlay.active .modal-content { transform: translateY(0); }
+
+        .modal-content h2 { font-family: 'Aref Ruqaa', serif; font-size: clamp(1.5rem, 6vw, 2.2rem); color: var(--wood-dark); margin-bottom: 15px; }
+        .modal-content p { font-family: 'Amiri', serif; font-size: clamp(1.2rem, 5vw, 1.6rem); line-height: 1.5; color: #444; }
+
+        .close-btn {
+            margin-top: 25px; background: none; border: 1px solid var(--accent-gold);
+            color: var(--accent-gold); padding: 10px 30px; border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* رسالة الوعد النهائية - تحسين الظهور على الموبايل */
+        #final-message {
+            position: fixed; bottom: -100px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-gold); color: #fff;
+            padding: 15px 30px; border-radius: 50px;
+            font-family: 'Aref Ruqaa', serif;
+            font-size: clamp(1.1rem, 5vw, 1.8rem);
+            z-index: 2000; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transition: all 1s ease;
+            white-space: nowrap; opacity: 0;
+        }
+
+        #final-message.show { bottom: 40px; opacity: 1; }
+
+        #hearts-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+        footer { text-align: center; padding: 40px 20px; opacity: 0.5; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div class="vignette"></div>
+    <canvas id="hearts-layer"></canvas>
+
+    <header>
+        <h1>لوحة أمنياتنا</h1>
+        <p>كل ورقة حلم.. وكل حلم وعد</p>
+    </header>
+
+    <div class="board">
+        <div class="sticky-note" style="--r: -2deg;" onclick="showWish(0, 'الفجر على البحر', 'نفسي أكون معاكي في دهب، ونصحى قبل الفجر نقعد قدام البحر وهو هادي.. مفيش صوت غير صوت الميه ونفسنا وإيدنا في إيد بعض.')">
+            <span>دهب 🌊</span>
+        </div>
+        <div class="sticky-note" style="--r: 3deg;" onclick="showWish(1, 'ركن هادي ليكِ', 'نفسي في بيتنا يكون ليكِ ركن مخصوص، مليان كتبك وورد وشبابيكه بتدخل شمس.. وأنا ال أعملك القهوة بتاعتك كل يوم.')">
+            <span>بيتنا 🏠</span>
+        </div>
+        <div class="sticky-note" style="--r: -1.5deg;" onclick="showWish(2, 'ضحك من القلب', 'نفسي نتمشى في شوارع القاهرة القديمة بليل، وناكل درة مشوي ونقعد نضحك على أي حاجة تافهة لحد ما قلبنا يوجعنا.')">
+            <span>شوارعنا 🌙</span>
+        </div>
+        <div class="sticky-note" style="--r: 2.5deg;" onclick="showWish(3, 'أمنية الشتا', 'نفسي في ليلة برد جداً، نكون قاعدين بنتفرج على فيلمنا ال بنحبه، ومش محتاجين أي حاجة من الدنيا غير إننا نكون مع بعض.')">
+            <span>ليالينا ☕</span>
+        </div>
+        <div class="sticky-note" style="--r: -3deg;" onclick="showWish(4, 'باريس ', 'نفسي أخدك باريس، ونتمشى تحت برج إيفل وإحنا بنسمع أغانينا ال بنحبها، وأقولك إنك أحلى من أي مدينة في العالم.')">
+            <span>سفرية بعيدة ✈️</span>
+        </div>
+        <div class="sticky-note" style="--r: 1.5deg;" onclick="showWish(5, 'روتين السعادة', 'نفسي يجي اليوم اللي يكون فيه أكبر همنا هنفطر إيه النهاردة، ونقضي اليوم كله في البيت بنهزر ونعمل حاجات تافهة سوا.')">
+            <span>يومنا العادي ✨</span>
+        </div>
+    </div>
+
+    <div class="overlay" id="wishOverlay">
+        <div class="modal-content">
+            <h2 id="modalTitle"></h2>
+            <p id="modalText"></p>
+            <button class="close-btn" onclick="hideWish()">أقفلي الورقة.. ✨</button>
+        </div>
+    </div>
+
+    <div id="final-message">وعد مني هنحقق كل دا سوا ❤️</div>
+
+    <footer>كل حرف هنا طالع من قلبي ليكِ ❤️</footer>
+
+    <script>
+        // الكود البرمجي الأصلي دون تغيير
+        let openedWishes = new Set();
+        const totalWishes = 6;
+
+        function showWish(id, title, text) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalText').innerText = text;
+            document.getElementById('wishOverlay').classList.add('active');
+            openedWishes.add(id);
+        }
+
+        function hideWish() {
+            document.getElementById('wishOverlay').classList.remove('active');
+            if (openedWishes.size === totalWishes) {
+                setTimeout(() => { document.getElementById('final-message').classList.add('show'); }, 1200);
+            }
+        }
+
+        const canvas = document.getElementById('hearts-layer');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Heart {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 50;
+                this.size = Math.random() * 8 + 4;
+                this.speed = Math.random() * 0.5 + 0.2;
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
+            update() { this.y -= this.speed; if (this.y < -20) this.reset(); }
+            draw() {
+                ctx.save(); ctx.translate(this.x, this.y); ctx.globalAlpha = this.opacity; ctx.fillStyle = '#c5a059';
+                ctx.beginPath(); const d = this.size;
+                ctx.moveTo(0, d / 4); ctx.quadraticCurveTo(0, 0, d / 4, 0); ctx.quadraticCurveTo(d / 2, 0, d / 2, d / 4);
+                ctx.quadraticCurveTo(d / 2, 0, (d * 3) / 4, 0); ctx.quadraticCurveTo(d, 0, d, d / 4);
+                ctx.quadraticCurveTo(d, d / 2, d / 2, d * 0.85); ctx.quadraticCurveTo(0, d / 2, 0, d / 4);
+                ctx.fill(); ctx.restore();
+            }
+        }
+        for(let i=0; i<25; i++) particles.push(new Heart());
+        function animate() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

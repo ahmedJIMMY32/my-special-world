@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>عالمنا الخاص ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;400;700&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #c5a059;
+            --bg-dark: #050505;
+        }
+
+        /* منع السكرول الخارجي وتحسين اللمس */
+        * { 
+            box-sizing: border-box; 
+            transition: all 0.4s ease; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            height: 100%; width: 100%;
+            background-color: var(--bg-dark);
+            font-family: 'Cairo', sans-serif;
+            overflow: hidden;
+            position: fixed; 
+        }
+
+        /* استايل بوابة الدخول - بنفس روح التصميم */
+        #entry-gate {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 1s ease-in-out;
+        }
+
+        #entry-gate h1 {
+            font-family: 'Aref Ruqaa', serif;
+            color: var(--gold);
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+        }
+
+        #entry-gate button {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.1);
+        }
+
+        #entry-gate button:active { transform: scale(0.95); }
+
+        #main-hub {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1000;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #main-hub.hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+        }
+
+        .hub-content { width: 100%; max-width: 500px; text-align: center; z-index: 10; }
+
+        .hub-content h1 {
+            font-family: 'Aref Ruqaa', serif;
+            font-size: clamp(1.8rem, 10vw, 3rem);
+            color: var(--gold);
+            margin-bottom: 30px;
+        }
+
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            padding: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: right;
+        }
+
+        .menu-card:active { transform: scale(0.98); background: rgba(197, 160, 89, 0.1); }
+
+        .menu-card i { font-size: 1.8rem; }
+        .menu-card .info { display: flex; flex-direction: column; }
+        .menu-card span { font-size: 1.1rem; font-weight: 700; color: var(--gold); }
+        .menu-card p { font-size: 0.8rem; color: #aaa; margin: 2px 0 0 0; }
+
+        #world-container {
+            width: 100%; 
+            height: 100%;
+            border: none;
+            display: none;
+            background: var(--bg-dark);
+            position: relative;
+            z-index: 400;
+        }
+
+        #back-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: none;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        #hub-canvas { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="entry-gate">
+        <h1>مستعدة؟ ❤️</h1>
+        <button onclick="startExperience()">ادخلي عالمي</button>
+    </div>
+
+    <canvas id="hub-canvas"></canvas>
+
+    <button id="back-btn" onclick="closeWorld()">الرجوع للقائمة ❤️</button>
+
+    <div id="main-hub">
+        <div class="hub-content">
+            <h1>عالمنا الخاص ❤️</h1>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="openWorld('letter.html')">
+                    <i>✉️</i>
+                    <div class="info">
+                        <span>جوابات من قلبي</span>
+                        <p>رسايل مكتوبة ليكي وبس</p>
+                    </div>
+                </div>
+                <div class="menu-card" onclick="openWorld('wishes.html')">
+                    <i>🏠</i>
+                    <div class="info">
+                        <span>لوحة أمنياتنا</span>
+                        <p>أحلامنا اللي هتتحقق سوا</p>
+                    </div>
+                </div>
+                <div class="menu-card" onclick="openWorld('mood.html')">
+                    <i>✨</i>
+                    <div class="info">
+                        <span>عالمك الخاص</span>
+                        <p>حاسة بإيه النهاردة؟</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <iframe id="world-container" src=""></iframe>
+
+    <script>
+        const hub = document.getElementById('main-hub');
+        const container = document.getElementById('world-container');
+        const backBtn = document.getElementById('back-btn');
+        const gate = document.getElementById('entry-gate');
+        const music = document.getElementById('bgMusic');
+
+        // دالة تشغيل التجربة والموسيقى
+        function startExperience() {
+            music.play().catch(e => console.log("الصوت محتاج تفاعل"));
+            gate.style.opacity = '0';
+            setTimeout(() => {
+                gate.style.display = 'none';
+            }, 1000);
+        }
+
+        function openWorld(fileName) {
+            container.src = fileName;
+            container.style.display = 'block';
+            hub.classList.add('hide');
+            setTimeout(() => { backBtn.style.display = 'block'; }, 1500);
+        }
+
+        function closeWorld() {
+            hub.classList.remove('hide');
+            backBtn.style.display = 'none';
+            setTimeout(() => {
+                container.style.display = 'none';
+                container.src = "";
+            }, 500);
+        }
+
+        // كود النجوم الأصلي بتاعك
+        const canvas = document.getElementById('hub-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+        for(let i=0; i<80; i++) stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*1.2, o: Math.random() });
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { ctx.fillStyle = `rgba(197, 160, 89, ${s.o})`; ctx.beginPath(); ctx.arc(s.x, s.y, s.s, 0, Math.PI*2); ctx.fill(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
