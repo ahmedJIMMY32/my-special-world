@@ -8,25 +8,34 @@
     
     <style>
         :root {
-            --neon-blue: #00d4ff;
             --bg-dark: #020205;
             --glass: rgba(255, 255, 255, 0.03);
+            --current-mood-color: #ffffff;
         }
 
-        * { box-sizing: border-box; transition: all 0.6s cubic-bezier(0.2, 1, 0.3, 1); -webkit-tap-highlight-color: transparent; }
+        /* جعل الانتقالات أكثر سلاسة وبطئاً (1.2 ثانية) */
+        * { box-sizing: border-box; transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; padding: 0;
             background: var(--bg-dark);
             color: white;
             font-family: 'Cairo', sans-serif;
-            min-height: 100vh; /* تغيير من height لـ min-height للموبايل */
-            overflow-x: hidden; /* منع التمرير الأفقي فقط */
+            min-height: 100vh;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px; /* إضافة مسافة أمان */
+            padding: 20px;
+        }
+
+        #mood-bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 0%, var(--bg-dark) 100%);
+            transition: background 1.2s ease, opacity 1.2s ease;
+            opacity: 0.5;
         }
 
         #space-canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
@@ -39,21 +48,18 @@
 
         header h1 {
             font-weight: 200; 
-            font-size: clamp(1.8rem, 8vw, 2.5rem); /* حجم مرن للعنوان */
-            letter-spacing: 2px; /* تقليل المسافة للموبايل */
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
             color: #fff;
             text-shadow: 0 0 20px rgba(255,255,255,0.3);
             margin: 0;
         }
-        header p { font-size: clamp(0.9rem, 4vw, 1.1rem); opacity: 0.7; margin-top: 10px; }
 
-        /* الكواكب - الحاوية الأساسية */
         .galaxy-container { 
             position: relative; 
             z-index: 10; 
             width: 100%; 
             max-width: 900px; 
-            height: 500px; /* الارتفاع الأصلي للكمبيوتر */
+            height: 500px;
         }
 
         .planet {
@@ -62,124 +68,77 @@
             background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(8px);
             text-align: center;
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
         }
 
         .planet::before {
             content: ''; position: absolute; width: 120%; height: 120%;
             border-radius: 50%; background: var(--glow); filter: blur(30px);
             opacity: 0.15; z-index: -1;
-            transition: 0.5s;
+            transition: 1.2s;
         }
 
-        .planet:hover, .planet:active { /* إضافة active للمس */
+        .planet:hover, .planet:active {
             transform: scale(1.05) translateY(-5px); 
             border-color: var(--glow-color); 
             box-shadow: 0 0 30px var(--glow-color); 
         }
-        .planet:hover::before, .planet:active::before { opacity: 0.3; }
 
-        /* أماكن الكواكب الأصلية (لشاشات الكمبيوتر) */
-        .p1 { width: 150px; height: 150px; top: 10%; left: 10%; --glow-color: #ff007f; --glow: radial-gradient(#ff007f, transparent); animation: float 7s infinite ease-in-out; }
-        .p2 { width: 170px; height: 170px; bottom: 15%; left: 20%; --glow-color: var(--neon-blue); --glow: radial-gradient(var(--neon-blue), transparent); animation: float 9s infinite ease-in-out -2s; }
-        .p3 { width: 160px; height: 160px; top: 20%; right: 15%; --glow-color: #9d00ff; --glow: radial-gradient(#9d00ff, transparent); animation: float 8s infinite ease-in-out -4s; }
-        .p4 { width: 140px; height: 140px; bottom: 10%; right: 10%; --glow-color: #00ff95; --glow: radial-gradient(#00ff95, transparent); animation: float 10s infinite ease-in-out -1s; }
+        .p1 { width: 150px; height: 150px; top: 10%; left: 10%; --glow-color: #ff85a2; --glow: radial-gradient(#ff85a2, transparent); animation: float 7s infinite ease-in-out; } 
+        .p2 { width: 170px; height: 170px; bottom: 15%; left: 20%; --glow-color: #4da3ff; --glow: radial-gradient(#4da3ff, transparent); animation: float 9s infinite ease-in-out -2s; } 
+        .p3 { width: 160px; height: 160px; top: 20%; right: 15%; --glow-color: #c5a059; --glow: radial-gradient(#c5a059, transparent); animation: float 8s infinite ease-in-out -4s; } 
+        .p4 { width: 140px; height: 140px; bottom: 10%; right: 10%; --glow-color: #a285ff; --glow: radial-gradient(#a285ff, transparent); animation: float 10s infinite ease-in-out -1s; }
 
-        .planet span {
-            font-size: clamp(0.9rem, 4vw, 1.1rem); /* حجم خط مرن جوه الكوكب */
-            font-weight: 400; color: #fff;
-            padding: 10px;
-        }
+        .planet span { font-size: clamp(0.9rem, 4vw, 1.1rem); color: #fff; padding: 10px; }
 
         @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(5px, -15px); } }
 
-        /* ------------------------------------------------ */
-        /* التنسيق الخاص بالموبايل (Media Query) */
-        /* ------------------------------------------------ */
         @media (max-width: 768px) {
-            body { justify-content: flex-start; padding-top: 40px; overflow-y: auto; } /* تفعيل السكرول العمودي */
-            
-            .galaxy-container {
-                height: auto; /* إلغاء الارتفاع الثابت */
-                display: grid; /* استخدام جريد لتنظيم الكواكب */
-                grid-template-columns: 1fr 1fr; /* صفين */
-                gap: 20px;
-                padding-bottom: 50px;
-            }
-
-            /* إعادة تعيين الموضع المطلق للكواكب في الموبايل */
-            .planet {
-                position: relative; /* تغيير من absolute لـ relative جوه الجريد */
-                top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
-                width: 100% !important; /* ملء المربع الخاص بها في الجريد */
-                height: auto !important;
-                aspect-ratio: 1 / 1; /* الحفاظ على الشكل الدائري */
-                animation: floatMobile 6s infinite ease-in-out; /* أنيميشن أخف */
-            }
-
-            @keyframes floatMobile { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-            
-            /* تعديل أنيميشن الظهور للشهب لتكون أخف */
-            .p1 { animation-delay: 0s; } .p2 { animation-delay: 0.2s; } .p3 { animation-delay: 0.4s; } .p4 { animation-delay: 0.6s; }
+            body { justify-content: flex-start; padding-top: 40px; }
+            .galaxy-container { height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            .planet { position: relative; top: auto !important; left: auto !important; right: auto !important; bottom: auto !important; width: 100% !important; height: auto !important; aspect-ratio: 1 / 1; }
         }
 
-        /* ------------------------------------------------ */
-        /* تنسيق النافذة (Modal) - محسّن للموبايل */
-        /* ------------------------------------------------ */
         .galaxy-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); z-index: 1000;
             display: flex; justify-content: center; align-items: center;
             opacity: 0; visibility: hidden; backdrop-filter: blur(15px);
-            padding: 20px; /* مسافة أمان */
+            padding: 20px;
+            /* سلاسة ظهور النافذة السوداء */
+            transition: all 1.2s ease;
         }
 
         .galaxy-overlay.active { opacity: 1; visibility: visible; }
 
-        .modal-wrapper { position: relative; width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: center; }
+        .modal-wrapper { position: relative; width: 100%; max-width: 500px; }
 
         .msg-box {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: clamp(30px, 8vw, 50px) clamp(20px, 5vw, 40px); /* حشو مرن */
-            border-radius: 30px; width: 100%;
-            text-align: center; transform: scale(0.9); box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            z-index: 1001;
+            padding: 40px 20px; border-radius: 30px; width: 100%; text-align: center;
+            /* سلاسة حركة صندوق الرسالة */
+            transition: transform 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+            transform: scale(0.8) translateY(20px);
         }
 
-        .galaxy-overlay.active .msg-box { transform: scale(1); }
+        .galaxy-overlay.active .msg-box { transform: scale(1) translateY(0); }
 
-        /* الاستيكر - محسّن للموبايل */
         .sticker {
-            position: absolute;
-            width: clamp(80px, 20vw, 120px); /* حجم مرن */
-            height: clamp(80px, 20vw, 120px);
-            right: clamp(-30px, -5vw, -60px); /* موضع مرن */
-            top: clamp(-30px, -5vw, -40px);
-            font-size: clamp(50px, 15vw, 80px); /* حجم ايموجي مرن */
-            z-index: 1002;
-            opacity: 0;
-            transform: scale(0) rotate(-20deg);
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+            position: absolute; width: 100px; height: 100px; right: -30px; top: -30px;
+            font-size: 60px; z-index: 1002; opacity: 0; transform: scale(0);
+            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .sticker.show { opacity: 1; transform: scale(1) rotate(10deg); }
-
-        .msg-box h2 { font-weight: 700; font-size: clamp(1.5rem, 6vw, 2rem); margin-bottom: 15px; color: #fff; }
-        .msg-box p { font-size: clamp(1.1rem, 5vw, 1.4rem); line-height: 1.5; font-weight: 200; color: #ddd; margin: 0; }
-
-        .close-btn {
-            margin-top: 30px; background: white; border: none; color: black;
-            padding: 10px 35px; border-radius: 50px; font-weight: 700; cursor: pointer;
-            font-size: 1rem;
-        }
+        .msg-box h2 { font-size: 1.8rem; margin-bottom: 15px; color: var(--current-mood-color); }
+        .msg-box p { font-size: 1.2rem; line-height: 1.5; color: #ddd; }
+        .close-btn { margin-top: 30px; background: white; border: none; padding: 10px 35px; border-radius: 50px; cursor: pointer; font-weight: 700; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
+    <div id="mood-bg-glow"></div>
     <canvas id="space-canvas"></canvas>
 
     <header>
@@ -188,16 +147,16 @@
     </header>
 
     <div class="galaxy-container">
-        <div class="planet p1" onclick="openMood('وحشتيني اوي اوي', 'غيبتك بتخلي اليوم ملوش طعم.. كأن النور مطفي في العالم كله. وحشتيني يا أجمل صدفة في حياتي.', '🥺')">
+        <div class="planet p1" onclick="openMood('وحشتيني اوي اوي', 'غيبتك بتخلي اليوم ملوش طعم.. كأن النور مطفي في العالم كله. وحشتيني يا أجمل صدفة في حياتي.', '🥺', '#ff85a2')">
             <span>وحشتيني ❤️</span>
         </div>
-        <div class="planet p2" onclick="openMood('حقك على قلبي', 'ميهونش عليا أشوفك زعلانة وانتِ اللي بتضحكي الدنيا كلها.. حقك عليا يروح قلبي.', '😿')">
+        <div class="planet p2" onclick="openMood('حقك على قلبي', 'ميهونش عليا أشوفك زعلانة وانتِ اللي بتضحكي الدنيا كلها.. حقك عليا يروح قلبي.', '😿', '#4da3ff')">
             <span>زعلانة مني 😢</span>
         </div>
-        <div class="planet p3" onclick="openMood('انتِ قوية', 'مهما كان يومك صعب، افتكري إنك بطلة في عيني. أنا دايمًا جنبك ومعاكي في كل خطوة.. كملي يا روحي انا فخور بيكِ وبكل ال بتعمليه.', '👑')">
+        <div class="planet p3" onclick="openMood('انتِ قوية', 'مهما كان يومك صعب، افتكري إنك بطلة في عيني. أنا دايمًا جنبك ومعاكي في كل خطوة.. كملي يا روحي انا فخور بيكِ وبكل ال بتعمليه.', '👑', '#c5a059')">
             <span>محتاجة تشجيع 💪</span>
         </div>
-        <div class="planet p4" onclick="openMood('فصلة حب', 'لو الدنيا زحمة عليكي، تعالي نهرب هنا. ضحكتك هي المكان اللي برتاح فيه من كل دوشة العالم.', '🌸')">
+        <div class="planet p4" onclick="openMood('فصلة حب', 'لو الدنيا زحمة عليكي، تعالي نهرب هنا. ضحكتك هي المكان اللي برتاح فيه من كل دوشة العالم.', '🌸', '#a285ff')">
             <span>زهقانة شوية 🥱</span>
         </div>
     </div>
@@ -214,26 +173,27 @@
     </div>
 
     <script>
-        // الكود البرمجي لم يتغير نهائياً
-        let stickerTimer;
-
-        function openMood(t, m, stickerEmoji) {
+        let activeColor = "#ffffff";
+        function openMood(t, m, emoji, color) {
+            activeColor = color;
+            document.documentElement.style.setProperty('--current-mood-color', color);
+            const glow = document.getElementById('mood-bg-glow');
+            glow.style.background = `radial-gradient(circle at center, ${color}44 0%, #020205 100%)`;
+            glow.style.opacity = '1';
             document.getElementById('title').innerText = t;
             document.getElementById('text').innerText = m;
-            const stickerElement = document.getElementById('moodSticker');
-            stickerElement.innerText = stickerEmoji; 
-            
+            document.getElementById('moodSticker').innerText = emoji;
             document.getElementById('overlay').classList.add('active');
-
-            stickerTimer = setTimeout(() => {
-                stickerElement.classList.add('show');
-            }, 1000); 
+            // تأخير ظهور الإيموجي قليلاً ليكون متناغماً مع حركة النافذة
+            setTimeout(() => { document.getElementById('moodSticker').classList.add('show'); }, 800);
         }
 
         function closeMood() {
             document.getElementById('overlay').classList.remove('active');
             document.getElementById('moodSticker').classList.remove('show');
-            clearTimeout(stickerTimer);
+            document.getElementById('mood-bg-glow').style.opacity = '0.5';
+            document.getElementById('mood-bg-glow').style.background = `radial-gradient(circle at center, transparent 0%, #020205 100%)`;
+            activeColor = "#ffffff";
         }
 
         const canvas = document.getElementById('space-canvas');
@@ -259,7 +219,8 @@
             }
             draw() {
                 if(!this.active) return;
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.3)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke();
+                ctx.strokeStyle = activeColor; 
+                ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke();
             }
         }
 
