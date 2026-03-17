@@ -28,7 +28,7 @@
             position: fixed; 
         }
 
-        /* استايل بوابة الدخول */
+        /* استايل بوابة الدخول المطورة بالدخلة السينمائية */
         #entry-gate {
             position: fixed;
             top: 0; left: 0;
@@ -42,7 +42,27 @@
             transition: 1s ease-in-out;
         }
 
-        #entry-gate h1 {
+        /* تنسيق نصوص الترحيب */
+        #greeting-text {
+            text-align: center;
+            color: var(--gold);
+            font-family: 'Aref Ruqaa', serif;
+            font-size: clamp(1.5rem, 7vw, 2.2rem);
+            padding: 20px;
+            max-width: 85%;
+            line-height: 1.6;
+            transition: opacity 1s ease-in-out;
+            text-shadow: 0 0 15px rgba(197, 160, 89, 0.3);
+        }
+
+        #ready-section {
+            opacity: 0;
+            display: none;
+            text-align: center;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #ready-section h1 {
             font-family: 'Aref Ruqaa', serif;
             color: var(--gold);
             font-size: 2.5rem;
@@ -50,7 +70,7 @@
             text-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
         }
 
-        #entry-gate button {
+        #ready-section button {
             background: transparent;
             border: 1px solid var(--gold);
             color: var(--gold);
@@ -65,20 +85,20 @@
         /* --- تعديل مكان الزر ليكون فوق على اليمين --- */
         #back-btn {
             position: fixed;
-            top: 20px; /* المسافة من الأعلى */
-            right: 20px; /* المسافة من اليمين */
+            top: 20px; 
+            right: 20px; 
             z-index: 2000;
             background: rgba(197, 160, 89, 0.15);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(197, 160, 89, 0.4);
             color: var(--gold);
-            padding: 8px 20px; /* تصغير الحجم قليلاً ليكون متوسطاً */
+            padding: 8px 20px; 
             border-radius: 50px;
             cursor: pointer;
             display: none;
             font-family: 'Cairo', sans-serif;
-            font-size: 0.9rem; /* خط أصغر قليلاً متناسب مع الحجم الجديد */
+            font-size: 0.9rem; 
             font-weight: 700;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             animation: pulseBtn 2s infinite;
@@ -169,8 +189,12 @@
     </audio>
 
     <div id="entry-gate">
-        <h1>مستعدة؟ ❤️</h1>
-        <button onclick="startExperience()">ادخلي عالمي</button>
+        <div id="greeting-text"></div>
+        
+        <div id="ready-section">
+            <h1>مستعدة؟ ❤️</h1>
+            <button onclick="startExperience()">ادخلي عالمي</button>
+        </div>
     </div>
 
     <canvas id="hub-canvas"></canvas>
@@ -214,6 +238,42 @@
         const backBtn = document.getElementById('back-btn');
         const gate = document.getElementById('entry-gate');
         const music = document.getElementById('bgMusic');
+        const greetingDiv = document.getElementById('greeting-text');
+        const readySection = document.getElementById('ready-section');
+
+        // نصوص الدخلة السينمائية
+        const messages = [
+            "كل سنة وأنتِ منورة دنيتي.. ❤️",
+            "العيد السنة دي مختلف، عشان أنتِ العيد نفسه. ✨",
+            "حبيت أهديكي حاجة بسيطة، بس شايلة كل اللي في قلبي.."
+        ];
+
+        let msgIndex = 0;
+
+        function showNextMessage() {
+            if (msgIndex < messages.length) {
+                greetingDiv.style.opacity = '0';
+                setTimeout(() => {
+                    greetingDiv.innerText = messages[msgIndex];
+                    greetingDiv.style.opacity = '1';
+                    msgIndex++;
+                    setTimeout(showNextMessage, 3500); // عرض كل جملة لمدة 3.5 ثانية
+                }, 1000);
+            } else {
+                // تلاشي الرسائل وظهور "مستعدة؟"
+                greetingDiv.style.opacity = '0';
+                setTimeout(() => {
+                    greetingDiv.style.display = 'none';
+                    readySection.style.display = 'block';
+                    setTimeout(() => { readySection.style.opacity = '1'; }, 100);
+                }, 1000);
+            }
+        }
+
+        // بدء الدخلة السينمائية عند التحميل
+        window.onload = () => {
+            showNextMessage();
+        };
 
         function startExperience() {
             music.play().catch(e => console.log("الصوت محتاج تفاعل"));
