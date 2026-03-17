@@ -39,7 +39,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: 1s ease-in-out;
+            transition: 1.5s ease-in-out;
         }
 
         /* تنسيق نصوص الترحيب */
@@ -82,7 +82,6 @@
             box-shadow: 0 0 20px rgba(197, 160, 89, 0.1);
         }
 
-        /* --- تعديل مكان الزر ليكون فوق على اليمين --- */
         #back-btn {
             position: fixed;
             top: 20px; 
@@ -104,10 +103,6 @@
             animation: pulseBtn 2s infinite;
         }
 
-        #back-btn:active {
-            transform: scale(0.92);
-        }
-
         @keyframes pulseBtn {
             0% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(197, 160, 89, 0); }
@@ -125,6 +120,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            transition: 1s ease-in-out;
         }
 
         #main-hub.hide {
@@ -133,8 +129,71 @@
             transform: scale(0.95);
         }
 
-        .hub-content { width: 100%; max-width: 500px; text-align: center; z-index: 10; }
+        /* --- استايلات شاشة الختام الجديدة --- */
+        #finale-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            z-index: 4000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            opacity: 0;
+            transition: 2s ease-in-out;
+        }
 
+        .finale-text {
+            color: var(--gold);
+            font-family: 'Aref Ruqaa', serif;
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0;
+            transition: 1.5s ease-in-out;
+            position: absolute;
+        }
+
+        #final-msg-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: 1.5s ease-in-out;
+        }
+
+        .final-long-text {
+            color: var(--gold);
+            font-family: 'Cairo', sans-serif;
+            font-size: clamp(1.1rem, 5vw, 1.4rem);
+            line-height: 1.8;
+            margin-bottom: 30px;
+            max-width: 90%;
+        }
+
+        .final-back-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 1s ease-out;
+        }
+
+        .final-back-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hub-content { width: 100%; max-width: 500px; text-align: center; z-index: 10; }
         .hub-content h1 {
             font-family: 'Aref Ruqaa', serif;
             font-size: clamp(1.8rem, 10vw, 3rem);
@@ -142,13 +201,7 @@
             margin-bottom: 30px;
         }
 
-        .menu-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
-
+        .menu-grid { display: flex; flex-direction: column; gap: 15px; width: 100%; }
         .menu-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(197, 160, 89, 0.3);
@@ -161,22 +214,17 @@
             gap: 15px;
             text-align: right;
         }
-
         .menu-card:active { transform: scale(0.98); background: rgba(197, 160, 89, 0.1); }
-
         .menu-card i { font-size: 1.8rem; }
         .menu-card .info { display: flex; flex-direction: column; }
         .menu-card span { font-size: 1.1rem; font-weight: 700; color: var(--gold); }
         .menu-card p { font-size: 0.8rem; color: #aaa; margin: 2px 0 0 0; }
 
         #world-container {
-            width: 100%; 
-            height: 100%;
-            border: none;
-            display: none;
-            background: var(--bg-dark);
-            position: relative;
-            z-index: 400;
+            width: 100%; height: 100%; border: none; display: none;
+            background: var(--bg-dark); position: relative; z-index: 400;
+            transition: 1s ease-in-out;
+            opacity: 1; /* التأكد من أن الشفافية افتراضياً 1 */
         }
 
         #hub-canvas { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
@@ -190,10 +238,20 @@
 
     <div id="entry-gate">
         <div id="greeting-text"></div>
-        
         <div id="ready-section">
             <h1>مستعدة؟ ❤️</h1>
             <button onclick="startExperience()">ادخلي عالمي</button>
+        </div>
+    </div>
+
+    <div id="finale-screen">
+        <div id="finale-msg-1" class="finale-text">كنتِ ومازلتِ أجمل أعيادي ❤️</div>
+        
+        <div id="final-msg-container">
+            <p class="final-long-text">
+                كل عيد وإحنا سوا، وكل سنة وأمانينا بتكبر معانا.. تاني عيد يعدي معانا واحنا مع بعض، ومستني العيد الجاي عشان أعملك مفاجأة أكبر.
+            </p>
+            <button id="final-btn" class="final-back-btn" onclick="resetToHub()">رجوع للقائمة</button>
         </div>
     </div>
 
@@ -205,26 +263,17 @@
         <div class="hub-content">
             <h1>عالمنا الخاص ❤️</h1>
             <div class="menu-grid">
-                <div class="menu-card" onclick="openWorld('letter.html')">
+                <div class="menu-card" onclick="openWorld('letter.html', 'letter')">
                     <i>✉️</i>
-                    <div class="info">
-                        <span>جوابات من قلبي</span>
-                        <p>رسايل مكتوبة ليكي وبس</p>
-                    </div>
+                    <div class="info"><span>جوابات من قلبي</span><p>رسايل مكتوبة ليكي وبس</p></div>
                 </div>
-                <div class="menu-card" onclick="openWorld('wishes.html')">
+                <div class="menu-card" onclick="openWorld('wishes.html', 'wishes')">
                     <i>🏠</i>
-                    <div class="info">
-                        <span>لوحة أمنياتنا</span>
-                        <p>أحلامنا اللي هتتحقق سوا</p>
-                    </div>
+                    <div class="info"><span>لوحة أمنياتنا</span><p>أحلامنا اللي هتتحقق سوا</p></div>
                 </div>
-                <div class="menu-card" onclick="openWorld('mood.html')">
+                <div class="menu-card" onclick="openWorld('mood.html', 'mood')">
                     <i>✨</i>
-                    <div class="info">
-                        <span>عالمك الخاص</span>
-                        <p>حاسة بإيه النهاردة؟</p>
-                    </div>
+                    <div class="info"><span>عالمك الخاص</span><p>حاسة بإيه النهاردة؟</p></div>
                 </div>
             </div>
         </div>
@@ -241,7 +290,13 @@
         const greetingDiv = document.getElementById('greeting-text');
         const readySection = document.getElementById('ready-section');
 
-        // نصوص الدخلة السينمائية
+        const finaleScreen = document.getElementById('finale-screen');
+        const msg1 = document.getElementById('finale-msg-1');
+        const finalContainer = document.getElementById('final-msg-container');
+        const finalBtn = document.getElementById('final-btn');
+        
+        let visitedPages = new Set();
+
         const messages = [
             "كل سنة وأنتِ منورة دنيتي.. ❤️",
             "العيد السنة دي مختلف، عشان أنتِ العيد نفسه. ✨",
@@ -257,10 +312,9 @@
                     greetingDiv.innerText = messages[msgIndex];
                     greetingDiv.style.opacity = '1';
                     msgIndex++;
-                    setTimeout(showNextMessage, 3500); // عرض كل جملة لمدة 3.5 ثانية
+                    setTimeout(showNextMessage, 3500);
                 }, 1000);
             } else {
-                // تلاشي الرسائل وظهور "مستعدة؟"
                 greetingDiv.style.opacity = '0';
                 setTimeout(() => {
                     greetingDiv.style.display = 'none';
@@ -270,33 +324,86 @@
             }
         }
 
-        // بدء الدخلة السينمائية عند التحميل
-        window.onload = () => {
-            showNextMessage();
-        };
+        window.onload = () => { showNextMessage(); };
 
         function startExperience() {
             music.play().catch(e => console.log("الصوت محتاج تفاعل"));
             gate.style.opacity = '0';
-            setTimeout(() => {
-                gate.style.display = 'none';
-            }, 1000);
+            setTimeout(() => { gate.style.display = 'none'; }, 1000);
         }
 
-        function openWorld(fileName) {
+        function openWorld(fileName, sectionId) {
+            visitedPages.add(sectionId);
             container.src = fileName;
             container.style.display = 'block';
+            container.style.opacity = '1'; // نضمن ظهور الفريم عند فتحه
             hub.classList.add('hide');
             setTimeout(() => { backBtn.style.display = 'block'; }, 1000);
         }
 
         function closeWorld() {
-            hub.classList.remove('hide');
+            if (visitedPages.size >= 3) {
+                showFinale();
+            } else {
+                hub.classList.remove('hide');
+                backBtn.style.display = 'none';
+                setTimeout(() => {
+                    container.style.display = 'none';
+                    container.src = "";
+                }, 500);
+            }
+        }
+
+        function showFinale() {
             backBtn.style.display = 'none';
+            container.style.opacity = '0'; // إخفاء الفريم قبل الانتقال لشاشة النهاية
+            
             setTimeout(() => {
                 container.style.display = 'none';
+                finaleScreen.style.display = 'flex';
+                
+                setTimeout(() => {
+                    finaleScreen.style.opacity = '1';
+                    
+                    setTimeout(() => {
+                        msg1.style.opacity = '1';
+                        
+                        setTimeout(() => {
+                            msg1.style.opacity = '0';
+                            setTimeout(() => {
+                                msg1.style.display = 'none';
+                                finalContainer.style.display = 'flex';
+                                setTimeout(() => {
+                                    finalContainer.style.opacity = '1';
+                                    setTimeout(() => {
+                                        finalBtn.classList.add('show');
+                                    }, 1000);
+                                }, 100);
+                            }, 1500);
+                        }, 3500);
+                    }, 1000);
+                }, 100);
+            }, 1000);
+        }
+
+        function resetToHub() {
+            visitedPages.clear();
+            finaleScreen.style.opacity = '0';
+            setTimeout(() => {
+                finaleScreen.style.display = 'none';
+                hub.classList.remove('hide');
+                
+                // --- الحل هنا: إعادة تعيين حاوية الصفحات لتعمل من جديد ---
+                container.style.opacity = '1'; 
+                container.style.display = 'none';
                 container.src = "";
-            }, 500);
+                
+                msg1.style.display = 'block';
+                msg1.style.opacity = '0';
+                finalContainer.style.display = 'none';
+                finalContainer.style.opacity = '0';
+                finalBtn.classList.remove('show');
+            }, 1500);
         }
 
         const canvas = document.getElementById('hub-canvas');
