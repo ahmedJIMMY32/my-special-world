@@ -28,7 +28,7 @@
             position: fixed; 
         }
 
-        /* استايل بوابة الدخول - بنفس روح التصميم */
+        /* استايل بوابة الدخول */
         #entry-gate {
             position: fixed;
             top: 0; left: 0;
@@ -62,7 +62,37 @@
             box-shadow: 0 0 20px rgba(197, 160, 89, 0.1);
         }
 
-        #entry-gate button:active { transform: scale(0.95); }
+        /* --- تعديل مكان الزر ليكون فوق على اليمين --- */
+        #back-btn {
+            position: fixed;
+            top: 20px; /* المسافة من الأعلى */
+            right: 20px; /* المسافة من اليمين */
+            z-index: 2000;
+            background: rgba(197, 160, 89, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(197, 160, 89, 0.4);
+            color: var(--gold);
+            padding: 8px 20px; /* تصغير الحجم قليلاً ليكون متوسطاً */
+            border-radius: 50px;
+            cursor: pointer;
+            display: none;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem; /* خط أصغر قليلاً متناسب مع الحجم الجديد */
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: pulseBtn 2s infinite;
+        }
+
+        #back-btn:active {
+            transform: scale(0.92);
+        }
+
+        @keyframes pulseBtn {
+            0% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(197, 160, 89, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0); }
+        }
 
         #main-hub {
             position: fixed;
@@ -129,23 +159,6 @@
             z-index: 400;
         }
 
-        #back-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2000;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            display: none;
-            font-size: 0.9rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-        }
-
         #hub-canvas { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
     </style>
 </head>
@@ -162,7 +175,7 @@
 
     <canvas id="hub-canvas"></canvas>
 
-    <button id="back-btn" onclick="closeWorld()">الرجوع للقائمة ❤️</button>
+    <button id="back-btn" onclick="closeWorld()">← رجوع</button>
 
     <div id="main-hub">
         <div class="hub-content">
@@ -202,7 +215,6 @@
         const gate = document.getElementById('entry-gate');
         const music = document.getElementById('bgMusic');
 
-        // دالة تشغيل التجربة والموسيقى
         function startExperience() {
             music.play().catch(e => console.log("الصوت محتاج تفاعل"));
             gate.style.opacity = '0';
@@ -215,7 +227,7 @@
             container.src = fileName;
             container.style.display = 'block';
             hub.classList.add('hide');
-            setTimeout(() => { backBtn.style.display = 'block'; }, 1500);
+            setTimeout(() => { backBtn.style.display = 'block'; }, 1000);
         }
 
         function closeWorld() {
@@ -227,7 +239,6 @@
             }, 500);
         }
 
-        // كود النجوم الأصلي بتاعك
         const canvas = document.getElementById('hub-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
